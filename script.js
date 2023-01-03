@@ -1,58 +1,56 @@
-const input = document.querySelector("input")
-const defaultText = document.getElementById("default")
-const debounceText = document.getElementById("debounce")
-const throttleText = document.getElementById("throttle")
+const input = document.querySelector("input");
+const defaultText = document.getElementById("default");
+const debounceText = document.getElementById("debounce");
+const throttleText = document.getElementById("throttle");
 
-const updateDebounceText = debounce(() => {
-  incrementCount(debounceText)
-})
-const updateThrottleText = throttle(() => {
-  incrementCount(throttleText)
-}, 100)
+const updateDebounceText = debounce((text) => {
+  debounceText.textContent = text;
+}, 1000);
+
+const updateThrottleText = throttle(text => {
+ throttleText.textContent = text;
+}, 250);
 
 function debounce(cb, delay = 1000) {
-  let timeout
+  let timeout;
 
   return (...args) => {
-    clearTimeout(timeout)
+    clearTimeout(timeout);
     timeout = setTimeout(() => {
-      cb(...args)
-    }, delay)
-  }
+      cb(...args);
+    }, delay);
+  };
 }
 
 function throttle(cb, delay = 1000) {
-  let shouldWait = false
-  let waitingArgs
+  let shouldWait = false;
+  let waitingArgs;
   const timeoutFunc = () => {
     if (waitingArgs == null) {
-      shouldWait = false
+      shouldWait = false;
     } else {
-      cb(...waitingArgs)
-      waitingArgs = null
-      setTimeout(timeoutFunc, delay)
+      cb(...waitingArgs);
+      waitingArgs = null;
+      setTimeout(timeoutFunc, delay);
     }
-  }
+  };
 
   return (...args) => {
     if (shouldWait) {
-      waitingArgs = args
-      return
+      waitingArgs = args;
+      return;
     }
 
-    cb(...args)
-    shouldWait = true
+    cb(...args);
+    shouldWait = true;
 
-    setTimeout(timeoutFunc, delay)
-  }
+    setTimeout(timeoutFunc, delay);
+  };
 }
 
-document.addEventListener("mousemove", e => {
-  incrementCount(defaultText)
-  updateDebounceText()
-  updateThrottleText()
-})
+input.addEventListener("input", (e) => {
+  defaultText.textContent = e.target.value;
+  updateDebounceText(e.target.value);
+  updateThrottleText(e.target.value)
+});
 
-function incrementCount(element) {
-  element.textContent = (parseInt(element.innerText) || 0) + 1
-}
